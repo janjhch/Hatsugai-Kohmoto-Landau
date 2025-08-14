@@ -5,4 +5,8 @@ from . import HKLconstant_1D
 from . import HKLconstant_2D
 from . import HKLconstant_3D
 from . import HKLseparable_1D
+from . import PhaseDiagram_1D
+from . import PhaseDiagram_2D
+from . import PhaseDiagram_3D
 from . import PlotFunctions
+from . import SavedLists

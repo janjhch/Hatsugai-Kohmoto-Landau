@@ -13,6 +13,11 @@ import numpy as np
 
 t = 1
 
+# Simply creates array of N mu values for any given U
+# Note that this DOES NOT give mu(rho) for an array of rho values!
+def create_mu_array(N: int, U: float):
+    return np.linspace(-2 * t, 2 * t + U, N)
+
 
 # ================================================================
 # OBTAIN DENSITY NUMERICALLY VIA INTEGRATION OF OCCUPATION NUMBERS
@@ -92,11 +97,6 @@ def create_rho_array(mu_array: np.ndarray, U: float):
     rho_array = np.array(rho_list)
 
     return rho_array
-
-# Simply creates array of N mu values for any given U
-# Note that this DOES NOT give mu(rho) for an array of rho values!
-def create_mu_array(N: int, U: float):
-    return np.linspace(-2 * t, 2 * t + U, N)
 
 
 

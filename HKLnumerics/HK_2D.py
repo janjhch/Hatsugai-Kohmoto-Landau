@@ -1,3 +1,8 @@
+# NOTE:
+# This file gives functions to calculate thermodynamic quantities of an unmodified HK model in two dimensions.
+# There are significantly less comments in this file. The naming of the functions should however be
+# self-explanatory given the comments in the file 'HK_1D.py' and the function defined in the thesis.
+
 import numpy as np
 from scipy import integrate
 
@@ -19,7 +24,6 @@ def I_1(x: float):
         result = np.heaviside(x + 2*t, 1)
     return result
 
-# I_2(x) = int_-pi^pi dk I_1(x + 2tcosk)
 def I_2(x: float):
     def I_1_shifted(k):
         return I_1(x + 2*t*np.cos(k))
@@ -28,7 +32,6 @@ def I_2(x: float):
     
     return integral_value[0] / (2*np.pi)
 
-# rho = I_2(mu) + I_2(mu - U)
 def rho_2d(mu: float, U: float):
     if U >= 0:
         return I_2(mu) + I_2(mu - U)
@@ -97,4 +100,40 @@ def create_kappa_array(mu_array: np.ndarray, U: float):
 # ==============
 # ENERGY DENSITY
 # ==============
+
+def J_1(x: float):
+    if -1 <= x/(2*t) <= 1:
+        result = - np.sqrt((2*t)**2 - x**2) /np.pi
+        return result
+    else:
+        return 0
+    
+def J_2(x: float):
+    def J_1_shifted(k):
+        return J_1(x + 2*t*np.cos(k))
+    
+    result_integral = integrate.quad(J_1_shifted, -np.pi, np.pi)
+
+    return result_integral[0] / np.pi
+
+def energy_2d(mu: float, U: float):
+    if U >= 0:
+        return J_2(mu) + J_2(mu - U) + U*I_2(mu - U)
+    else:
+        return 2*J_2(mu - U/2) + U*I_2(mu - U/2)
+    
+def create_energy_array(mu_array: np.ndarray, U: float):
+    e_list = []
+    N = len(mu_array)
+    i = 0
+
+    for mu_val in mu_array:
+        print(f'\rProgress: {(i / N * 100):.1f}%{' ' * 20}', end="", flush=True)
+        i += 1
+        e_val = energy_2d(mu_val, U)
+        e_list.append(e_val)
+
+    e_array = np.array(e_list)
+
+    return e_array
 
