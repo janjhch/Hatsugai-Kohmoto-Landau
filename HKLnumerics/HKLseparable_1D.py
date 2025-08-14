@@ -1,6 +1,6 @@
 # NOTE:
 # This file contains many functions. This is because the numerics of this HKL model are somwhat unstable and different 
-# Ansatzes were implemented. Theres generally two Ansatzes containing two different Methods each. They are as follows:
+# Ansatzes were implemented. There's generally two Ansatzes containing two different Methods each. They are as follows:
 #
 # 1. Take rho array, calculate corresponding mu values
 #   Method 1: Direct root finding of 2d function defined by the system of equations for rho and e_tilde
@@ -27,14 +27,14 @@ def create_mu_array(N: int, U: float, f_0: float):
 # =======
 
 # I_1 with two variables
-def I_1(x, y):
+def I_1(x: float, y: float):
     if np.abs(x / (2 * t * y)) < 1:
         return np.heaviside(x + 2 * t * y, 1) - np.arccos(x / (2 * t * y)) / np.pi
     else:
         return np.heaviside(x + 2 * t * y, 1)
     
 # J_1 with two varibales
-def J_1(x, y):
+def J_1(x: float, y: float):
     if np.abs(x / (2 * t * y)) < 1:
         return - np.sqrt((2 * t * y)**2 - x**2) / np.pi
     else:
@@ -43,7 +43,7 @@ def J_1(x, y):
 
 # The non-linear system of equations that needs to be solved
 # Only for U > 0!   
-def GLS_1d(rho, mu, U, e_tilde, f_0, f_1):
+def GLS_1d(rho: float, mu: float, U: float, e_tilde: float, f_0: float, f_1: float):
     eq1 = rho - (I_1(mu - f_0 * rho, 1 + f_1 * e_tilde) + I_1(mu - U - f_0 * rho, 1 + f_1 * e_tilde))
     eq2 = e_tilde - (J_1(mu - f_0 * rho, 1 + f_1 * e_tilde) + J_1(mu - U - f_0 * rho, 1 + f_1 * e_tilde))
     return [eq1, eq2]
@@ -52,7 +52,7 @@ def GLS_1d(rho, mu, U, e_tilde, f_0, f_1):
 #---- Ansatz 1.1 --------
 
 # Direct 2d root finding
-def solve_GLS_1d_for_mu(rho, U, f_0, f_1, initial_guess):
+def solve_GLS_1d_for_mu(rho: float, U: float, f_0: float, f_1: float, initial_guess: list):
     # def x = [mu, e_tilde]
     GLS_reduced = lambda x: GLS_1d(rho, x[0], U, x[1], f_0, f_1)
     sol = root(GLS_reduced, initial_guess, method='hybr')
@@ -62,7 +62,7 @@ def solve_GLS_1d_for_mu(rho, U, f_0, f_1, initial_guess):
 
 # Given an array of rho values, solve the SOE for mu and e_tilde, return two arrays with the corresponding values
 # Uses direct root finding method
-def create_solution_arrays_mu_e_root(rho_array, U, f_0, f_1):
+def create_solution_arrays_mu_e_root(rho_array: np.ndarray, U: float, f_0: float, f_1: float):
     mu_list = []
     e_tilde_list = []
 
@@ -105,7 +105,7 @@ def create_solution_arrays_mu_e_root(rho_array, U, f_0, f_1):
 #---- Ansatz 1.2 --------
 
 # Instead of direct root finding, search for minimum in the norm of the function defined by SOE
-def minimize_GLS_norm_1d_wrt_mu(rho, U, f_0, f_1, initial_guess):
+def minimize_GLS_norm_1d_wrt_mu(rho: float, U: float, f_0: float, f_1: float, initial_guess: list):
     # def x = [mu, e_tilde]
     GLS_reduced = lambda x: GLS_1d(rho, x[0], U, x[1], f_0, f_1)
     GLS_reduced_norm = lambda x: GLS_reduced(x)[0]**2 + GLS_reduced(x)[1]**2
@@ -117,7 +117,7 @@ def minimize_GLS_norm_1d_wrt_mu(rho, U, f_0, f_1, initial_guess):
 
 # Given an array of rho values, solve the SOE for mu and e_tilde, return two arrays with the corresponding values
 # Uses minimization of norm
-def create_solution_arrays_mu_e_norm(rho_array, U, f_0, f_1):
+def create_solution_arrays_mu_e_norm(rho_array: np.ndarray, U: float, f_0: float, f_1: float):
     mu_list = []
     e_tilde_list = []
 
@@ -166,7 +166,7 @@ def create_solution_arrays_mu_e_norm(rho_array, U, f_0, f_1):
 #---- Ansatz 2.1 --------
 
 # Do not solve SOE for mu, but for rho
-def solve_GLS_1d_for_rho(mu, U, f_0, f_1, initial_guess):
+def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float, initial_guess: list):
     # def x = [rho, e_tilde]
     GLS_reduced = lambda x: GLS_1d(x[0], mu, U, x[1], f_0, f_1)
     sol = root(GLS_reduced, initial_guess, method='hybr')
@@ -176,7 +176,7 @@ def solve_GLS_1d_for_rho(mu, U, f_0, f_1, initial_guess):
 
 # Given an array of mu values, calculate correponding rho and e_tilde values, which are returned as separate arrays
 # Uses direct 2d root finding
-def create_solution_arrays_rho_e_root(mu_array, U, f_0, f_1):
+def create_solution_arrays_rho_e_root(mu_array: np.ndarray, U: float, f_0: float, f_1: float):
     rho_list = []
     e_tilde_list = []
 
@@ -228,7 +228,7 @@ def create_solution_arrays_rho_e_root(mu_array, U, f_0, f_1):
 #---- Ansatz 2.2 --------
 
 # Instead of direct root finding, search for minimum in the norm of the function defined by SOE
-def minimize_GLS_norm_1d_rho_e(mu, U, f_0, f_1, initial_guess):
+def minimize_GLS_norm_1d_rho_e(mu: float, U: float, f_0: float, f_1: float, initial_guess: list):
     # def x = [rho, e_tilde]
     GLS_reduced = lambda x: GLS_1d(x[0], mu, U, x[1], f_0, f_1)
     GLS_reduced_norm = lambda x: GLS_reduced(x)[0]**2 + GLS_reduced(x)[1]**2
@@ -240,7 +240,7 @@ def minimize_GLS_norm_1d_rho_e(mu, U, f_0, f_1, initial_guess):
 
 # Given an array of mu values, calculate correponding rho and e_tilde values, which are returned as separate arrays
 # Uses minimization of norm
-def make_solution_arrays_rho_e_norm(mu_array, U, f_0, f_1):
+def make_solution_arrays_rho_e_norm(mu_array: np.ndarray, U: float, f_0: float, f_1: float):
     rho_list = []
     e_tilde_list = []
 
