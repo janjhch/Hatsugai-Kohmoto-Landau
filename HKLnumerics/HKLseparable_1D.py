@@ -183,7 +183,6 @@ def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float):
         elif U - 2 * t < mu:
             guess_rho = mu / (4 * t) + (3 - U / (2 * t)) / 2
 
-
     if U <= 4 * t * d:
         a = 1
         b = - a * (4 * t + U**2) / (4 * t + U)
@@ -201,7 +200,6 @@ def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float):
             b = - a *  (4 * t * U) / (U + 2 * t)
             c = - (U**2 + 2 * t**2) * a - U * b
             guess_e = a * mu**2 + b * mu + c
-
 
     guess = [guess_rho, 0]
 
