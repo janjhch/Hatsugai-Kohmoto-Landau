@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 # Simple plot function for quickly checking results
-def one_plot(x_array: np.ndarray, y_array: np.ndarray, x_label: str, y_label: str, title: str):
+def one_plot(x_array: np.ndarray, y_array: np.ndarray, x_label: str, y_label: str, title=''):
     plt.figure(dpi=150)
     # Plot erstellen
     plt.plot(x_array, y_array, linestyle='-')
@@ -49,7 +49,7 @@ def two_plots_one_figure(x_array_1: np.ndarray, x_array_2: np.ndarray, y_array_1
 def two_graphs_in_one_plot(x_array_1: np.ndarray, x_array_2: np.ndarray, y_array_1: np.ndarray, y_array_2: np.ndarray, 
                            label_1: str, label_2: str, x_label: str, y_label: str, title=''):
     plt.figure(dpi=150)
-    plt.style.use('seaborn-v0_8-muted')
+    #plt.style.use('seaborn-v0_8-muted')
     
     # Plot erstellen
     plt.plot(x_array_1, y_array_1, linestyle='-', label=label_1)
@@ -60,12 +60,27 @@ def two_graphs_in_one_plot(x_array_1: np.ndarray, x_array_2: np.ndarray, y_array
     plt.ylabel(y_label)
     plt.title(title, weight='bold')
     plt.legend(loc='best', frameon=True, fontsize=10)
+    plt.grid(True)
+    plt.show()
+
+# Plots any number of graphs in one plot, arrays must be given inside one list for x and y respectively
+def many_plots(label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str):
+    plt.figure(dpi=150)
+    # Plot erstellen
+    for i in range(len(x_arrays)):
+        plt.plot(x_arrays[i], y_arrays[i], linestyle='-', label=label_array[i])
+    
+    # Achsenbeschriftungen und Titel
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.grid(True)
+    plt.legend(loc='best')
     plt.show()
 
 
 # Plot the Phase Diagram, x_values should be an rho array, y_values the normalized critical interaction
 def plot_phase_diagram(x_values: np.ndarray, y_values: np.ndarray, x_label: str, y_label: str, y_max: float, 
-                       title='none', legend=False, fill=True, alph=1):    
+                       title='none', legend=False, fill=False, alph=1):    
     # Create the plot
     fig, ax = plt.subplots()
     

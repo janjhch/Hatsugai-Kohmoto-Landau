@@ -166,10 +166,46 @@ def create_solution_arrays_mu_e_norm(rho_array: np.ndarray, U: float, f_0: float
 #---- Ansatz 2.1 --------
 
 # Do not solve SOE for mu, but for rho
-def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float, initial_guess: list):
+def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float):
     # def x = [rho, e_tilde]
     GLS_reduced = lambda x: GLS_1d(x[0], mu, U, x[1], f_0, f_1)
-    sol = root(GLS_reduced, initial_guess, method='hybr')
+
+    # Guess something near a possible solution
+    if U <= 4 * t * d:
+        # Model as one straight line through start and endpoint
+        guess_rho = (2 / (4 * t + U)) * mu + 4 * t / (4 * t + U)
+    else:
+        # Model as two different lines for each band
+        if mu <= 2 * t:
+            guess_rho = mu / (4 * t) + 1 / (2 * t)
+        elif 2 * t < mu <= U - 2 * t:
+            guess_rho = 1
+        elif U - 2 * t < mu:
+            guess_rho = mu / (4 * t) + (3 - U / (2 * t)) / 2
+
+
+    if U <= 4 * t * d:
+        a = 1
+        b = - a * (4 * t + U**2) / (4 * t + U)
+        c = 2 * t * b - 4 * t**2 * a
+        # Model as ax**2 + bx + c
+        guess_e = a * mu**2 + b * mu + c
+    else:
+        a = 0.5
+        # Model as two different parabolas for each band
+        if mu <= 2 * t:
+            guess_e = a * (mu**2 - 4 * t**2 * a)
+        elif 2 * t < mu <= U - 2 * t:
+            guess_e = 0
+        elif U - 2 * t < mu:
+            b = - a *  (4 * t * U) / (U + 2 * t)
+            c = - (U**2 + 2 * t**2) * a - U * b
+            guess_e = a * mu**2 + b * mu + c
+
+
+    guess = [guess_rho, 0]
+
+    sol = root(GLS_reduced, guess, method='hybr')
     # Should return list [rho, e_tilde] for any given mu
     return sol.x
 
@@ -181,41 +217,7 @@ def create_solution_arrays_rho_e_root(mu_array: np.ndarray, U: float, f_0: float
     e_tilde_list = []
 
     for mu_val in mu_array:
-        if U <= 4 * t * d:
-            # Model as one straight line through start and endpoint
-            guess_rho = (2 / (4 * t + U)) * mu_val + 4 * t / (4 * t + U)
-        else:
-            # Model as two different lines for each band
-            if mu_val <= 2 * t:
-                guess_rho = mu_val / (4 * t) + 1 / (2 * t)
-            elif 2 * t < mu_val <= U - 2 * t:
-                guess_rho = 1
-            elif U - 2 * t < mu_val:
-                guess_rho = mu_val / (4 * t) + (3 - U / (2 * t)) / 2
-
-
-        if U <= 4 * t * d:
-            a = 1
-            b = - a * (4 * t + U**2) / (4 * t + U)
-            c = 2 * t * b - 4 * t**2 * a
-            # Model as ax**2 + bx + c
-            guess_e = a * mu_val**2 + b * mu_val + c
-        else:
-            a = 0.5
-            # Model as two different parabolas for each band
-            if mu_val <= 2 * t:
-                guess_e = a * (mu_val**2 - 4 * t**2 * a)
-            elif 2 * t < mu_val <= U - 2 * t:
-                guess_e = 0
-            elif U - 2 * t < mu_val:
-                b = - a *  (4 * t * U) / (U + 2 * t)
-                c = - (U**2 + 2 * t**2) * a - U * b
-                guess_e = a * mu_val**2 + b * mu_val + c
-
-
-        guess = [guess_rho, 0]
-
-        sol = solve_GLS_1d_for_rho(mu_val, U, f_0, f_1, guess)
+        sol = solve_GLS_1d_for_rho(mu_val, U, f_0, f_1)
         rho_list.append(sol[0])
         e_tilde_list.append(sol[1])
 

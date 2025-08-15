@@ -1,13 +1,10 @@
 import numpy as np
 from scipy.optimize import root_scalar, minimize
 from .HK_1D import rho_1d
-from .HKLseparable_1D import GLS_1d
+from .HKLseparable_1D import GLS_1d, solve_GLS_1d_for_rho
 
 t = 1
 d = 1
-
-def create_rho_array(N):
-    return np.linspace(0, 2, N)
 
 
 # ===================
@@ -65,7 +62,20 @@ def create_U_c_array_hk(rho_array: np.ndarray):
     return U_c_array
 
 
+# Returns N samples of rho, U_c(rho) pairs
+def phase_diagram_hk(N: int):
+    mu_array = np.linspace(-2 * t * d, 2 * t * d, N)
 
+    U_c_array = mu_array + 2 * t * d
+
+    rho_list =[]
+    for i in range(N):
+        rho_val = rho_1d(mu_array[i], U_c_array[i])
+        rho_list.append(rho_val)
+
+    rho_array = np.array(rho_list)
+
+    return rho_array, U_c_array
 
 
 # ================================
@@ -126,3 +136,26 @@ def create_U_c_array_landau(rho_array: np.ndarray, f_0: float, f_1: float):
 
     return U_c_array
 
+
+def phase_diagram_landau(N: int, f_1: float):
+    mu_arr = np.linspace(-2 * t * d, 2 * t * d, N)
+
+    Uc_list = []
+    rho_list = []
+
+    i: int = 0
+
+    for mu_val in mu_arr:
+        print(f'\rProgress: {(i/N * 100):.1f}%{' ' * 20}', end="", flush=True)
+        func_u = lambda U: mu_val + 2 * t * d * (1 + f_1 * solve_GLS_1d_for_rho(mu_val, U, 0, f_1)[1]) - U
+        Uc_val = root_scalar(func_u, method='brentq', bracket=(0, 4 * t * d))
+        rho_val = solve_GLS_1d_for_rho(mu_val, Uc_val.root, 0, f_1)[0]
+
+        Uc_list.append(Uc_val.root)
+        rho_list.append(rho_val)
+        i += 1
+
+    Uc_arr = np.array(Uc_list)
+    rho_arr = np.array(rho_list)
+
+    return Uc_arr, rho_arr
