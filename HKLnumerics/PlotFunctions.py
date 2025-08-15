@@ -1,9 +1,10 @@
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 # Simple plot function for quickly checking results
-def one_plot(x_array, y_array, x_label, y_label, title):
-    plt.figure(dpi=200)
+def one_plot(x_array: np.ndarray, y_array: np.ndarray, x_label: str, y_label: str, title: str):
+    plt.figure(dpi=150)
     # Plot erstellen
     plt.plot(x_array, y_array, linestyle='-')
     
@@ -16,9 +17,10 @@ def one_plot(x_array, y_array, x_label, y_label, title):
 
 
 # Create two plots next to each other in one figure
-def two_plots_one_figure(x_array_1, x_array_2, y_array_1, y_array_2, title, y_label, title_1='', title_2=''):
+def two_plots_one_figure(x_array_1: np.ndarray, x_array_2: np.ndarray, y_array_1: np.ndarray, y_array_2: np.ndarray, 
+                         title: str, y_label: str, title_1='', title_2=''):
     # Create side-by-side subplots
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 4), dpi=200)
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(10, 4), dpi=150)
     plt.style.use('seaborn-v0_8-pastel')
     
     # Plot 1
@@ -44,8 +46,9 @@ def two_plots_one_figure(x_array_1, x_array_2, y_array_1, y_array_2, title, y_la
 
 
 # Two graphs in one plot
-def two_graphs_in_one_plot(x_array_1, x_array_2, y_array_1, y_array_2, label_1, label_2, y_label, title=''):
-    plt.figure(dpi=200)
+def two_graphs_in_one_plot(x_array_1: np.ndarray, x_array_2: np.ndarray, y_array_1: np.ndarray, y_array_2: np.ndarray, 
+                           label_1: str, label_2: str, x_label: str, y_label: str, title=''):
+    plt.figure(dpi=150)
     plt.style.use('seaborn-v0_8-muted')
     
     # Plot erstellen
@@ -53,7 +56,7 @@ def two_graphs_in_one_plot(x_array_1, x_array_2, y_array_1, y_array_2, label_1, 
     plt.plot(x_array_2, y_array_2, linestyle='-', label=label_2)
     
     # Achsenbeschriftungen und Titel
-    plt.xlabel(r'$\rho$')
+    plt.xlabel(x_label)
     plt.ylabel(y_label)
     plt.title(title, weight='bold')
     plt.legend(loc='best', frameon=True, fontsize=10)
@@ -61,7 +64,8 @@ def two_graphs_in_one_plot(x_array_1, x_array_2, y_array_1, y_array_2, label_1, 
 
 
 # Plot the Phase Diagram, x_values should be an rho array, y_values the normalized critical interaction
-def plot_phase_diagram(x_values, y_values, x_label, y_label, y_max, title='none', legend=False, fill=True, alph=1):    
+def plot_phase_diagram(x_values: np.ndarray, y_values: np.ndarray, x_label: str, y_label: str, y_max: float, 
+                       title='none', legend=False, fill=True, alph=1):    
     # Create the plot
     fig, ax = plt.subplots()
     
