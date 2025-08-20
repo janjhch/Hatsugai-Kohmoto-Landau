@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.optimize import root_scalar
 from .HK_2D import rho_2d
+from .HKLseparable_2D import solve_GLS_2d_for_rho
 
 t = 1
 d = 2
@@ -60,7 +61,48 @@ def create_U_c_array_hk(rho_array: np.ndarray):
 
     return U_c_array
 
+def phase_diagram_hk(N: int):
+    mu_array = np.linspace(-2 * t * d, 2 * t * d, N)
+
+    U_c_array = mu_array + 2 * t * d
+
+    rho_list =[]
+    for i in range(N):
+        rho_val = rho_2d(mu_array[i], U_c_array[i])
+        rho_list.append(rho_val)
+
+    rho_array = np.array(rho_list)
+
+    return rho_array, U_c_array
 
 
 
-# HK MODEL WITH LANDAU INTERACTIONS?
+# =================================
+# HK MODEL WITH LANDAU INTERACTIONS
+# =================================
+
+
+def phase_diagram_landau(N: int, f_1: float):
+    mu_arr = np.linspace(-2 * t * d, 2 * t * d, N)
+
+    Uc_list = []
+    rho_list = []
+
+    i: int = 0
+
+    for mu_val in mu_arr:
+        print(f'\rProgress: {(i/N * 100):.1f}%{' ' * 20}', end="", flush=True)
+        func_u = lambda U: mu_val + 2 * t * d * (1 + f_1 * solve_GLS_2d_for_rho(mu_val, U, 0, f_1)[1]) - U
+        Uc_val = root_scalar(func_u, method='brentq', bracket=(0, 4 * t * d))
+        rho_val = solve_GLS_2d_for_rho(mu_val, Uc_val.root, 0, f_1)[0]
+
+        Uc_list.append(Uc_val.root)
+        rho_list.append(rho_val)
+        i += 1
+
+    print(f'\rProgress: {(i/N * 100):.1f}%{' ' * 20}', end="", flush=True)
+
+    Uc_arr = np.array(Uc_list)
+    rho_arr = np.array(rho_list)
+
+    return Uc_arr, rho_arr

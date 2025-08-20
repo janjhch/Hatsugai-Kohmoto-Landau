@@ -42,7 +42,7 @@ def GLS_2d(rho: float, mu: float, U: float, e_tilde: float, f_0: float, f_1: flo
     return [eq1, eq2]
 
 # Do not solve SOE for mu, but for rho
-def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float):
+def solve_GLS_2d_for_rho(mu: float, U: float, f_0: float, f_1: float):
     # def x = [rho, e_tilde]
     GLS_reduced = lambda x: GLS_2d(x[0], mu, U, x[1], f_0, f_1)
 
@@ -94,7 +94,7 @@ def create_solution_arrays_rho_e_root(mu_array: np.ndarray, U: float, f_0: float
 
     for mu_val in mu_array:
         print(f'\rProgress: {(i / N * 100):.1f}%{' ' * 20}', end="", flush=True)
-        sol = solve_GLS_1d_for_rho(mu_val, U, f_0, f_1)
+        sol = solve_GLS_2d_for_rho(mu_val, U, f_0, f_1)
         rho_list.append(sol[0])
         e_tilde_list.append(sol[1])
         i += 1
