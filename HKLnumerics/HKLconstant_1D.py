@@ -16,11 +16,11 @@ def create_mu_array(N: int, U: float, f_0: float):
 # =================
 
 def rho_landau(rho: float, mu: float, U: float, f_0: float):
-    return rho - rho_1d(mu - f_0 * rho, t, U)
+    return rho - rho_1d(mu - f_0 * rho, U)
 
 def find_rho_of_mu_landau(mu: float, U: float, f_0: float, bracket=(0, 2)):
     ziel = lambda rho: rho_landau(rho, mu, U, f_0)
-    result = root_scalar(ziel, bracket=bracket, method='brentq')
+    result = root_scalar(ziel, method='brentq', bracket=bracket)
 
     if result.converged:
         return result.root
@@ -36,7 +36,7 @@ def create_rho_array(mu_array: np.ndarray, U: float, f_0: float):
         print(f'\rProgress: {(i / N * 100):.1f}%{' ' * 20}', end="", flush=True)
         i += 1
         try:
-            rho = find_rho_of_mu_landau(mu_val, t, U, f_0)
+            rho = find_rho_of_mu_landau(mu_val, U, f_0)
             rho_list.append(rho)
         except RuntimeError:
             rho_list.append(np.nan)
