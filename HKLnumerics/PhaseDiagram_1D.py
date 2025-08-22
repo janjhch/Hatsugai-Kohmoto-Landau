@@ -95,11 +95,16 @@ def phase_diagram_landau(N: int, f_1: float):
     for mu_val in mu_arr:
         print(f'\rProgress: {(i/N * 100):.1f}%{' ' * 20}', end="", flush=True)
         func_u = lambda U: mu_val + 2 * t * d * (1 + f_1 * solve_GLS_1d_for_rho(mu_val, U, 0, f_1)[1]) - U
-        Uc_val = root_scalar(func_u, method='brentq', bracket=(0, 4 * t * d))
-        rho_val = solve_GLS_1d_for_rho(mu_val, Uc_val.root, 0, f_1)[0]
+        try:
+            Uc_val = root_scalar(func_u, method='brentq', bracket=(0, 4 * t * d))
+            rho_val = solve_GLS_1d_for_rho(mu_val, Uc_val.root, 0, f_1)[0]
 
-        Uc_list.append(Uc_val.root)
-        rho_list.append(rho_val)
+            Uc_list.append(Uc_val.root)
+            rho_list.append(rho_val)
+        except ValueError:
+            Uc_list.append(np.nan)
+            rho_list.append(np.nan)
+            print(f'Warning: Root finding failed at {i}-th point!')
         i += 1
 
     Uc_arr = np.array(Uc_list)
