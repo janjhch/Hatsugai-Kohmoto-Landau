@@ -89,9 +89,9 @@ def solve_GLS_3d_for_rho(mu: float, U: float, f_0: float, f_1: float):
             c = - (U**2 + 2 * t**2) * a - U * b
             guess_e = a * mu**2 + b * mu + c
 
-    guess = [guess_rho, 0]
+    guess = [guess_rho, guess_e]
 
-    sol = root(GLS_reduced, guess, method='hybr')
+    sol = root(GLS_reduced, guess, method='hybr', tol=1e-3)
     # Should return list [rho, e_tilde] for any given mu
     return sol.x
 
