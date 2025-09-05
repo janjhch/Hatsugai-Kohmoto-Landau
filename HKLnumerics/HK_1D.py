@@ -10,6 +10,7 @@
 
 
 import numpy as np
+from scipy.optimize import root_scalar
 
 t = 1
 
@@ -98,6 +99,31 @@ def create_rho_array(mu_array: np.ndarray, U: float):
 
     return rho_array
 
+
+def find_mu_interaction_driven(rho: float, U: float, bracket=(-2 * t, 2 * t)):
+    func_mu = lambda mu: rho - rho_1d(mu, U)
+    result = root_scalar(func_mu, method='brentq', bracket=bracket)
+
+    if result.converged:
+        return result.root
+    else:
+        raise RuntimeError(f"Keine Nullstelle gefunden für rho={rho}")
+    
+
+def create_mu_array_interaction_driven(rho: float, U_array: np.ndarray):
+    mu_list = []
+    N = len(U_array)
+    i = 0
+
+    for U_val in U_array:
+        print(f'\rProgress: {(i / N * 100):.1f}%{' ' * 20}', end="", flush=True)
+        i += 1
+        mu_val = find_mu_interaction_driven(rho, U_val)
+        mu_list.append(mu_val)
+
+    mu_array = np.array(mu_list)
+
+    return mu_array
 
 
 
