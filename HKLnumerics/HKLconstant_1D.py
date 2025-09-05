@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import root_scalar
-from .HK_1D import rho_1d, kappa_1d
+from .HK_1D import rho_1d, kappa_1d, energy_1d
 
 t = 1
 d = 1
@@ -79,5 +79,22 @@ def create_kappa_array(mu_array: np.ndarray, rho_array: np.ndarray, U: float, f_
 # ENERGY
 # ======
 
-# work in progress!
+def energy_landau(rho: float, mu: float, U: float, f_0: float):
+    return energy_1d(mu - f_0 * rho, U)
+
+def create_energy_array(mu_array: np.ndarray, rho_array: np.ndarray, U: float, f_0: float):
+    e_list = []
+    N = len(mu_array)
+    i = 0
+
+    for i in range(N):
+        rho_val, mu_val = rho_array[i], mu_array[i]
+        print(f'\rProgress: {(i / N * 100):.1f}%{' ' * 20}', end="", flush=True)
+        i += 1
+        e_val = energy_landau(rho_val, mu_val, U, f_0)
+        e_list.append(e_val)
+
+    e_array = np.array(e_list)
+
+    return e_array
 

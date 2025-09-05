@@ -287,3 +287,29 @@ def make_solution_arrays_rho_e_norm(mu_array: np.ndarray, U: float, f_0: float, 
     e_tilde_array = np.array(e_tilde_list)
 
     return rho_array, e_tilde_array
+
+
+
+
+
+
+# ==============
+# ENERGY DENSITY
+# ==============
+
+
+def create_energy_array(mu_array, rho_array, e_array, U, f_0, f_1):
+    energy_list = []
+    N = len(mu_array)
+    i = 0
+
+    for i in range(N):
+        rho_val, mu_val = rho_array[i], mu_array[i]
+        print(f'\rProgress: {(i / N * 100):.1f}%{' ' * 20}', end="", flush=True)
+        e_val = e_array[i] + U * I_1(mu_val - U - f_0 * rho_val, 1 + f_1 * e_array[i])
+        energy_list.append(e_val)
+        i += 1
+
+    energy_array = np.array(energy_list)
+
+    return energy_array
