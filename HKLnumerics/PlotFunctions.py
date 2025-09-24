@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
+textwidth = 6.377953
+
+
 # Simple plot function for quickly checking results
 def one_plot(x_array: np.ndarray, y_array: np.ndarray, x_label: str, y_label: str, title=''):
     plt.figure(dpi=150)
@@ -126,4 +129,50 @@ def plot_phase_diagram(x_values: np.ndarray, y_values: np.ndarray, x_label: str,
     ax.yaxis.set_major_locator(MultipleLocator(0.2))  # y-axis ticks every 0.5 units
 
     plt.show()
-   
+
+
+
+
+def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: str, y_label: str, title=''):
+    # Main curve
+    ax.plot(xarray, yarray, color="black", linewidth=1)
+
+    # Achsenbeschriftungen und Titel
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+    ax.grid(True)
+
+    ax.set_xlim(np.min(xarray), np.max(xarray))
+    ax.set_ylim(np.min(yarray), np.max(yarray))
+
+    #ax.tick_params(top=True, right=True, direction='in', pad=7)
+    ax.tick_params(top=False, right=False, bottom=False, left=False)
+    # Set major tick intervals
+    #ax.xaxis.set_major_locator(MultipleLocator(0.25))  # x-axis ticks every 0.2 units
+    ax.yaxis.set_major_locator(MultipleLocator(2))  # y-axis ticks every 0.5 units
+
+    if title != '':
+        ax.set_title(title, fontsize=12, weight='bold')
+
+    for spine in ["top", "right", "left", "bottom"]:
+        ax.spines[spine].set_visible(True)
+
+def thesis_doubleplot_one_line(xarrays: list, yarrays: list, xlabel:str, ylabel:str, titles=['',''], save_title=''):
+    plt.rcParams["text.usetex"] =True
+    plt.rcParams["font.size"] = 12
+    plt.rcParams["font.family"] = 'lmodern'
+    
+    # === Combined Figure ===
+    fig, axes = plt.subplots(1, 2)
+    fig.set_size_inches(textwidth, 4.5 * textwidth / 10)
+
+    thesis_plot_one_line(axes[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0])
+    thesis_plot_one_line(axes[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1])
+
+    plt.tight_layout(rect=[0,0,1,1])
+
+    if save_title != '':
+        plt.savefig(save_title, dpi=1000, bbox_inches="tight")
+        
+    plt.show()
+
