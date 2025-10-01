@@ -183,14 +183,14 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
         ax.plot(x_arrays[i], y_arrays[i], linestyle='-', label=label_array[i])
     
     # Achsenbeschriftungen und Titel
-    ax.xlabel(xlabel)
-    ax.ylabel(ylabel)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
     ax.grid(True)
 
     ax.set_xlim(np.min(x_arrays), np.max(x_arrays))
     ax.set_ylim(np.min(y_arrays), np.max(y_arrays))
 
-    ax.legend(loc='best')
+    #ax.legend(loc='best')
     if title != '':
         ax.set_title(title, fontsize=12, weight='bold')
 
@@ -204,6 +204,7 @@ def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: 
     plt.rcParams["text.usetex"] =True
     plt.rcParams["font.size"] = 12
     plt.rcParams["font.family"] = 'lmodern'
+    plt.style.use('seaborn-v0_8-muted')
     
     # === Combined Figure ===
     fig, axes = plt.subplots(1, 2)
@@ -211,6 +212,28 @@ def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: 
 
     thesis_plot_multiple_lines(axes[0], label_arrays[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0])
     thesis_plot_multiple_lines(axes[1], label_arrays[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1])
+
+    # Collect from both axes
+    handles, labels = [], []
+    for ax in axes:
+        h, l = ax.get_legend_handles_labels()
+        handles += h
+        labels += l
+
+    # Keep only occupation categories, and remove duplicates
+    keep = label_arrays[0]
+    handle_label_dict = {l: h for h, l in zip(handles, labels) if l in keep}
+
+    # Global legend
+    fig.legend(
+        handle_label_dict.values(),
+        handle_label_dict.keys(),
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.1),  # move legend below plots
+        ncol=4,
+        frameon=False
+    )
+
 
     plt.tight_layout(rect=[0,0,1,1])
 
