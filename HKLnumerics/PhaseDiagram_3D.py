@@ -29,8 +29,8 @@ def I_3(x):
     shifted_I_1 = x + 2 * t * (np.cos(k1k1) + np.cos(k2k2))
     func_val_grid = I_1(shifted_I_1)
 
-    intermediate = np.trapezoid(func_val_grid, k2_array, axis=1)
-    result = np.trapezoid(intermediate, k1_array)
+    intermediate = np.trapz(func_val_grid, k2_array, axis=1)
+    result = np.trapz(intermediate, k1_array)
 
     return result / ((2 * np.pi)**2)
 
@@ -99,6 +99,28 @@ def create_U_c_array_hk(rho_array: np.ndarray):
     U_c_array = np.array(U_c_list)
 
     return U_c_array
+
+
+
+def phase_diagram_hk(N: int):
+    mu_array = np.linspace(-2 * t * d, 2 * t * d, N)
+
+    U_c_array = mu_array + 2 * t * d
+    U_c_reversed = U_c_array[::-1]
+
+    rho_list =[]
+    for i in range(N):
+        rho_val = rho_3d(mu_array[i], U_c_array[i])
+        rho_list.append(rho_val)
+
+    for i in range(N):
+        rho_list.append(rho_list[i] + 1)
+
+    U_c_array = np.concatenate([U_c_array, U_c_reversed])
+
+    rho_array = np.array(rho_list)
+
+    return rho_array, U_c_array
 
 
 # HK MODEL WITH LANDAU INTERACTIONS?

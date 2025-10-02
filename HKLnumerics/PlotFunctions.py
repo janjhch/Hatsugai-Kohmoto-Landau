@@ -178,7 +178,7 @@ def thesis_doubleplot_one_line(xarrays: list, yarrays: list, xlabel:str, ylabel:
 def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str, title='', yticks=2, ylim_diff=0):
 
     # Plot erstellen
-    for i in range(len(x_arrays)):
+    for i in reversed(range(len(x_arrays))):
         ax.plot(x_arrays[i], y_arrays[i], linestyle='-', label=label_array[i], linewidth=1)
     
     # Achsenbeschriftungen und Titel
@@ -187,7 +187,7 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
     ax.grid(True)
 
     ax.set_xlim(np.min(x_arrays), np.max(x_arrays))
-    ax.set_ylim(np.min(y_arrays - ylim_diff), np.max(y_arrays))
+    ax.set_ylim(np.min(y_arrays)- ylim_diff, np.max(y_arrays))
 
     ax.tick_params(top=False, right=False, bottom=False, left=False)
 
@@ -201,7 +201,8 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
     ax.yaxis.set_major_locator(MultipleLocator(yticks))  # y-axis ticks every 0.5 units
     
 
-def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: list, xlabel:str, ylabel:str, titles=['',''], yticks=[2,2], ylimits=[0, 0] save_title=''):
+def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: list, xlabel:str, ylabel:str,
+                                      titles=['',''], yticks=[2,2], ylimits=[0, 0], save_title=''):
 
     # === Combined Figure ===
     fig, axes = plt.subplots(1, 2)
@@ -231,6 +232,107 @@ def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: 
         frameon=False
     )
 
+
+    plt.tight_layout(rect=[0,0,1,1])
+
+    if save_title != '':
+        plt.savefig(save_title, dpi=1000, bbox_inches="tight")
+        
+    plt.show()
+
+
+
+
+def thesis_plot_pd(rho: np.array, U_c_norm: np.array, save_title=''):
+    # Create the plot
+    fig, ax = plt.subplots()
+
+    fig.set_size_inches(6.377953 / 1.5, 2.73341 * 1.2)
+
+    ax.plot(rho, U_c_norm, label=r'$U_c (\rho)$', color='black', linewidth=1)
+
+    ax.vlines(x=1, ymin=1, ymax=1.6, color='black', linestyle='-')
+
+    ax.text(1, 0.4, 'I', ha='center')
+    ax.text(0.4, 1.0, 'II', ha='center')
+    ax.text(1.6, 1.0, 'III', ha='center')
+    ax.text(1.2, 1.25, 'IV', ha='left', va='center')
+
+    ax.annotate(
+    '', 
+    xy=(1.0, 1.25),    # arrowhead (end point)
+    xytext=(1.2, 1.25),# tail (start point)
+    arrowprops=dict(
+        arrowstyle='->',   # simple one-sided arrow
+        color='black',
+        linewidth=1
+    )
+)
+
+    # Labels and legend
+    ax.set_xlabel(r'$\rho$')
+    ax.set_ylabel(r'$U/W$', rotation=0, va='top')
+
+    ax.legend(frameon=False, loc='upper left')
+
+    ax.set_xlim(0, 2)
+    ax.set_ylim(0, 1.6)
+    ax.tick_params(top=True, right=True, direction='in', pad=7)
+    # Set major tick intervals
+    ax.xaxis.set_major_locator(MultipleLocator(0.5))  # x-axis ticks every 0.2 units
+    ax.yaxis.set_major_locator(MultipleLocator(0.5))  # y-axis ticks every 0.5 units
+
+    if save_title != '':
+        plt.savefig(save_title, dpi=1000, bbox_inches="tight")
+
+    plt.show()
+
+def pdplot(ax, rho: np.array, U_c_norm: np.array, title:str):
+    ax.plot(rho, U_c_norm, label=r'$U_c (\rho)$', color='black', linewidth=1)
+
+    ax.vlines(x=1, ymin=1, ymax=1.6, color='black', linestyle='-')
+
+    ax.text(1, 0.4, 'I', ha='center')
+    ax.text(0.4, 1.0, 'II', ha='center')
+    ax.text(1.6, 1.0, 'III', ha='center')
+    ax.text(1.2, 1.25, 'IV', ha='left', va='center')
+
+    ax.annotate(
+    '', 
+    xy=(1.0, 1.25),    # arrowhead (end point)
+    xytext=(1.2, 1.25),# tail (start point)
+    arrowprops=dict(
+        arrowstyle='->',   # simple one-sided arrow
+        color='black',
+        linewidth=1
+    )
+)
+
+    # Labels and legend
+    ax.set_xlabel(r'$\rho$')
+    ax.set_ylabel(r'$U/W$', rotation=0, va='top')
+
+    ax.legend(frameon=False, loc='upper left')
+
+    ax.set_title(title)
+
+    ax.set_xlim(0, 2)
+    ax.set_ylim(0, 1.6)
+    ax.tick_params(top=True, right=True, direction='in', pad=7)
+    # Set major tick intervals
+    ax.xaxis.set_major_locator(MultipleLocator(0.5))  # x-axis ticks every 0.2 units
+    ax.yaxis.set_major_locator(MultipleLocator(0.5))  # y-axis ticks every 0.5 units
+
+
+
+def thesis_doubleplot_pd(rho_arrays: list, U_c_arrays: list, titles: list, save_title=''):
+
+    # === Combined Figure ===
+    fig, axes = plt.subplots(1, 2)
+    fig.set_size_inches(textwidth, 4.5 * textwidth / 10)
+
+    pdplot(axes[0], rho_arrays[0], U_c_arrays[0], titles[0])
+    pdplot(axes[1], rho_arrays[1], U_c_arrays[1], titles[1])
 
     plt.tight_layout(rect=[0,0,1,1])
 

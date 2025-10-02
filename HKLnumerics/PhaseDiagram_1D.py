@@ -67,11 +67,17 @@ def phase_diagram_hk(N: int):
     mu_array = np.linspace(-2 * t * d, 2 * t * d, N)
 
     U_c_array = mu_array + 2 * t * d
+    U_c_reversed = U_c_array[::-1]
 
     rho_list =[]
     for i in range(N):
         rho_val = rho_1d(mu_array[i], U_c_array[i])
         rho_list.append(rho_val)
+
+    for i in range(N):
+        rho_list.append(rho_list[i] + 1)
+
+    U_c_array = np.concatenate([U_c_array, U_c_reversed])
 
     rho_array = np.array(rho_list)
 
