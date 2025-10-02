@@ -133,9 +133,10 @@ def plot_phase_diagram(x_values: np.ndarray, y_values: np.ndarray, x_label: str,
 
 
 
-def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: str, y_label: str, title='', yticks=2):
+def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: str, y_label: str, title='', yticks=2, ylim_diff=0):
     # Main curve
-    ax.plot(xarray, yarray, color="black", linewidth=1)
+    #ax.plot(xarray, yarray, color="black", linewidth=1)
+    ax.plot(xarray, yarray, linewidth=1)
 
     # Achsenbeschriftungen und Titel
     ax.set_xlabel(x_label)
@@ -143,7 +144,7 @@ def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: st
     ax.grid(True)
 
     ax.set_xlim(np.min(xarray), np.max(xarray))
-    ax.set_ylim(np.min(yarray), np.max(yarray))
+    ax.set_ylim(np.min(yarray) - ylim_diff, np.max(yarray))
 
     #ax.tick_params(top=True, right=True, direction='in', pad=7)
     ax.tick_params(top=False, right=False, bottom=False, left=False)
@@ -157,17 +158,14 @@ def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: st
     for spine in ["top", "right", "left", "bottom"]:
         ax.spines[spine].set_visible(True)
 
-def thesis_doubleplot_one_line(xarrays: list, yarrays: list, xlabel:str, ylabel:str, titles=['',''], yticks=[2,2], save_title=''):
-    plt.rcParams["text.usetex"] =True
-    plt.rcParams["font.size"] = 12
-    plt.rcParams["font.family"] = 'lmodern'
-    
+def thesis_doubleplot_one_line(xarrays: list, yarrays: list, xlabel:str, ylabel:str, titles=['',''], yticks=[2,2], ylimits=[0,0], save_title=''):
+
     # === Combined Figure ===
     fig, axes = plt.subplots(1, 2)
     fig.set_size_inches(textwidth, 4.5 * textwidth / 10)
 
-    thesis_plot_one_line(axes[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0])
-    thesis_plot_one_line(axes[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1])
+    thesis_plot_one_line(axes[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0], ylimits[0])
+    thesis_plot_one_line(axes[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1], ylimits[1])
 
     plt.tight_layout(rect=[0,0,1,1])
 
@@ -177,10 +175,11 @@ def thesis_doubleplot_one_line(xarrays: list, yarrays: list, xlabel:str, ylabel:
     plt.show()
 
 
-def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str, title='', yticks=2):
+def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str, title='', yticks=2, ylim_diff=0):
+
     # Plot erstellen
     for i in range(len(x_arrays)):
-        ax.plot(x_arrays[i], y_arrays[i], linestyle='-', label=label_array[i])
+        ax.plot(x_arrays[i], y_arrays[i], linestyle='-', label=label_array[i], linewidth=1)
     
     # Achsenbeschriftungen und Titel
     ax.set_xlabel(xlabel)
@@ -188,11 +187,13 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
     ax.grid(True)
 
     ax.set_xlim(np.min(x_arrays), np.max(x_arrays))
-    ax.set_ylim(np.min(y_arrays), np.max(y_arrays))
+    ax.set_ylim(np.min(y_arrays - ylim_diff), np.max(y_arrays))
+
+    ax.tick_params(top=False, right=False, bottom=False, left=False)
 
     #ax.legend(loc='best')
     if title != '':
-        ax.set_title(title, fontsize=12, weight='bold')
+        ax.set_title(title, weight='bold')
 
     for spine in ["top", "right", "left", "bottom"]:
         ax.spines[spine].set_visible(True)
@@ -200,18 +201,14 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
     ax.yaxis.set_major_locator(MultipleLocator(yticks))  # y-axis ticks every 0.5 units
     
 
-def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: list, xlabel:str, ylabel:str, titles=['',''], yticks=[2,2], save_title=''):
-    plt.rcParams["text.usetex"] =True
-    plt.rcParams["font.size"] = 12
-    plt.rcParams["font.family"] = 'lmodern'
-    plt.style.use('seaborn-v0_8-muted')
-    
+def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: list, xlabel:str, ylabel:str, titles=['',''], yticks=[2,2], ylimits=[0, 0] save_title=''):
+
     # === Combined Figure ===
     fig, axes = plt.subplots(1, 2)
     fig.set_size_inches(textwidth, 4.5 * textwidth / 10)
 
-    thesis_plot_multiple_lines(axes[0], label_arrays[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0])
-    thesis_plot_multiple_lines(axes[1], label_arrays[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1])
+    thesis_plot_multiple_lines(axes[0], label_arrays[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0], ylimits[0])
+    thesis_plot_multiple_lines(axes[1], label_arrays[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1], ylimits[1])
 
     # Collect from both axes
     handles, labels = [], []
@@ -229,7 +226,7 @@ def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: 
         handle_label_dict.values(),
         handle_label_dict.keys(),
         loc="upper center",
-        bbox_to_anchor=(0.5, 0.1),  # move legend below plots
+        bbox_to_anchor=(0.5, 0.05),  # move legend below plots
         ncol=4,
         frameon=False
     )
