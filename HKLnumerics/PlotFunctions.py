@@ -133,7 +133,7 @@ def plot_phase_diagram(x_values: np.ndarray, y_values: np.ndarray, x_label: str,
 
 
 
-def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: str, y_label: str, title='', yticks=2, ylim_diff=0):
+def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: str, y_label: str, title='', yticks=2, ylim_diff=0, ymax=None):
     # Main curve
     #ax.plot(xarray, yarray, color="black", linewidth=1)
     ax.plot(xarray, yarray, linewidth=1)
@@ -144,7 +144,10 @@ def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: st
     ax.grid(True)
 
     ax.set_xlim(np.min(xarray), np.max(xarray))
-    ax.set_ylim(np.min(yarray) - ylim_diff, np.max(yarray))
+    if ymax == None:
+        ax.set_ylim(np.min(yarray)- ylim_diff, np.max(yarray))
+    else:
+        ax.set_ylim(np.min(yarray)- ylim_diff, ymax)
 
     #ax.tick_params(top=True, right=True, direction='in', pad=7)
     ax.tick_params(top=False, right=False, bottom=False, left=False)
@@ -158,15 +161,23 @@ def thesis_plot_one_line(ax, xarray: np.ndarray, yarray: np.ndarray, x_label: st
     for spine in ["top", "right", "left", "bottom"]:
         ax.spines[spine].set_visible(True)
 
-def thesis_doubleplot_one_line(xarrays: list, yarrays: list, xlabel:str, ylabel:str, titles=['',''], yticks=[2,2], ylimits=[0,0], save_title=''):
+def thesis_doubleplot_one_line(xarrays: list, yarrays: list, xlabel:str, ylabel:str, titles=['',''], yticks=[2,2], ylimits=[0,0], save_title='', ymax=None):
 
     # === Combined Figure ===
     fig, axes = plt.subplots(1, 2)
     fig.set_size_inches(textwidth, 4.5 * textwidth / 10)
 
-    thesis_plot_one_line(axes[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0], ylimits[0])
-    thesis_plot_one_line(axes[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1], ylimits[1])
-
+    thesis_plot_one_line(axes[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0], ylimits[0], ymax)
+    thesis_plot_one_line(axes[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1], ylimits[1], ymax)
+    """
+        # --- Add subplot labels (a) and (b) ---
+        labels = ['(a)', '(b)']
+        for ax, label in zip(axes, labels):
+            ax.text(
+                0.02, 0.98, label, transform=ax.transAxes,
+                fontweight='bold', va='top', ha='left'
+            )
+    """
     plt.tight_layout(rect=[0,0,1,1])
 
     if save_title != '':
@@ -175,7 +186,7 @@ def thesis_doubleplot_one_line(xarrays: list, yarrays: list, xlabel:str, ylabel:
     plt.show()
 
 
-def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str, title='', yticks=2, ylim_diff=0):
+def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str, title='', yticks=2, ylim_diff=0, ymax=None):
 
     # Plot erstellen
     for i in reversed(range(len(x_arrays))):
@@ -187,7 +198,10 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
     ax.grid(True)
 
     ax.set_xlim(np.min(x_arrays), np.max(x_arrays))
-    ax.set_ylim(np.min(y_arrays)- ylim_diff, np.max(y_arrays))
+    if ymax == None:
+        ax.set_ylim(np.min(y_arrays)- ylim_diff, np.max(y_arrays))
+    else:
+        ax.set_ylim(np.min(y_arrays)- ylim_diff, ymax)
 
     ax.tick_params(top=False, right=False, bottom=False, left=False)
 
@@ -217,7 +231,15 @@ def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: 
         h, l = ax.get_legend_handles_labels()
         handles += h
         labels += l
-
+    """
+        # --- Add subplot labels (a) and (b) ---
+        plot_labels = ['(a)', '(b)']
+        for ax, plot_label in zip(axes, plot_labels):
+            ax.text(
+                0.02, 0.98, plot_label, transform=ax.transAxes,
+                fontweight='bold', va='top', ha='left'
+            )
+    """
     # Keep only occupation categories, and remove duplicates
     keep = label_arrays[0]
     handle_label_dict = {l: h for h, l in zip(handles, labels) if l in keep}
