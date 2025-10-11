@@ -113,7 +113,19 @@ def phase_diagram_landau(N: int, f_1: float):
             print(f'Warning: Root finding failed at {i}-th point!')
         i += 1
 
+    Uc_list = Uc_list[1:-1]
+    rho_list = rho_list[1:-1]
+
+    for i in range(N-2):
+        rho_list.append(rho_list[i] + 1)
+
     Uc_arr = np.array(Uc_list)
+    U_c_reversed = Uc_arr[::-1]
+    Uc_arr = np.concatenate([Uc_arr, U_c_reversed])
+
     rho_arr = np.array(rho_list)
+
+    Uc_arr = np.ma.masked_invalid(Uc_arr)
+    rho_arr = np.ma.masked_invalid(rho_arr)
 
     return Uc_arr, rho_arr

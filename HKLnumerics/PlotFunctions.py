@@ -204,6 +204,7 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
         ax.set_ylim(np.min(y_arrays)- ylim_diff, ymax)
 
     ax.tick_params(top=False, right=False, bottom=False, left=False)
+    ax.set_xlim(0, 2)
 
     #ax.legend(loc='best')
     if title != '':
@@ -216,7 +217,7 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
     
 
 def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: list, xlabel:str, ylabel:str,
-                                      titles=['',''], yticks=[2,2], ylimits=[0, 0], ymax=[None, None], save_title=''):
+                                      titles=['',''], yticks=[2,2], ylimits=[0, 0], ymax=[None, None], legend=True, save_title=''):
 
     # === Combined Figure ===
     fig, axes = plt.subplots(1, 2)
@@ -244,15 +245,16 @@ def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: 
     keep = label_arrays[0]
     handle_label_dict = {l: h for h, l in zip(handles, labels) if l in keep}
 
-    # Global legend
-    fig.legend(
-        handle_label_dict.values(),
-        handle_label_dict.keys(),
-        loc="upper center",
-        bbox_to_anchor=(0.5, 0.05),  # move legend below plots
-        ncol=4,
-        frameon=False
-    )
+    if legend == True:
+        # Global legend
+        fig.legend(
+            handle_label_dict.values(),
+            handle_label_dict.keys(),
+            loc="upper center",
+            bbox_to_anchor=(0.5, 0.05),  # move legend below plots
+            ncol=4,
+            frameon=False
+        )
 
 
     plt.tight_layout(rect=[0,0,1,1])
@@ -361,4 +363,63 @@ def thesis_doubleplot_pd(rho_arrays: list, U_c_arrays: list, titles: list, save_
     if save_title != '':
         plt.savefig(save_title, dpi=1000, bbox_inches="tight")
         
+    plt.show()
+
+
+def thesis_singleplot_multiple_lines(label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str, title='', yticks=2, save_title=''):
+
+    # Create the plot
+    fig, ax = plt.subplots()
+
+    fig.set_size_inches(6.377953 / 1.5, 2.73341 * 1.2)
+
+    # Plot erstellen
+    for i in reversed(range(len(x_arrays))):
+        ax.plot(x_arrays[i], y_arrays[i], linestyle='-', label=label_array[i], linewidth=1)
+    
+    # Achsenbeschriftungen und Titel
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.grid(True)
+
+    ax.set_xlim(0, 2)
+    ax.set_ylim(0, 1)
+
+    ax.tick_params(top=False, right=False, bottom=False, left=False)
+    ax.set_xlim(0, 2)
+
+    #ax.legend(loc='best')
+    if title != '':
+        ax.set_title(title, weight='bold')
+
+    for spine in ["top", "right", "left", "bottom"]:
+        ax.spines[spine].set_visible(True)
+
+    ax.yaxis.set_major_locator(MultipleLocator(yticks))  # y-axis ticks every 0.5 units
+    
+    ax.legend(loc="upper left",
+            bbox_to_anchor=(1, 1),  # move legend below plots
+            ncol=1,
+            frameon=False)
+
+    if save_title != '':
+        plt.savefig(save_title, dpi=1000, bbox_inches="tight")
+
+    # --- after you finish building the figure (plot, legend, etc.) ---
+    fig.canvas.draw()          # ensure renderer exists and artists have positions
+    renderer = fig.canvas.get_renderer()
+
+    # 1) Canvas nominal size (the size you set via set_size_inches)
+    canvas_w_in, canvas_h_in = fig.get_size_inches()
+    print(f"Canvas size (set)     : {canvas_w_in:.3f} in x {canvas_h_in:.3f} in "
+        f"= {canvas_w_in*2.54:.2f} cm x {canvas_h_in*2.54:.2f} cm")
+
+    # 2) Tight bounding box: the actual drawn extents that 'bbox_inches=tight' would use
+    tight_bbox = fig.get_tightbbox(renderer)   # Bbox in display units (pixels or points)
+    # convert display units -> inches by dividing by figure dpi
+    tight_w_in = tight_bbox.width 
+    tight_h_in = tight_bbox.height
+    print(f"Tight bbox (rendered)  : {tight_w_in:.5f} in x {tight_h_in:.5f} in "
+        f"= {tight_w_in*2.54:.2f} cm x {tight_h_in*2.54:.2f} cm")
+            
     plt.show()
