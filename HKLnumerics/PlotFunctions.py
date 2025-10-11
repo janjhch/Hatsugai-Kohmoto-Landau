@@ -216,14 +216,14 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
     
 
 def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: list, xlabel:str, ylabel:str,
-                                      titles=['',''], yticks=[2,2], ylimits=[0, 0], save_title=''):
+                                      titles=['',''], yticks=[2,2], ylimits=[0, 0], ymax=[None, None], save_title=''):
 
     # === Combined Figure ===
     fig, axes = plt.subplots(1, 2)
     fig.set_size_inches(textwidth, 4.5 * textwidth / 10)
 
-    thesis_plot_multiple_lines(axes[0], label_arrays[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0], ylimits[0])
-    thesis_plot_multiple_lines(axes[1], label_arrays[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1], ylimits[1])
+    thesis_plot_multiple_lines(axes[0], label_arrays[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0], ylimits[0], ymax[0])
+    thesis_plot_multiple_lines(axes[1], label_arrays[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1], ylimits[1], ymax[1])
 
     # Collect from both axes
     handles, labels = [], []

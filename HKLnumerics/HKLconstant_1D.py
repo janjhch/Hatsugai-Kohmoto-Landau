@@ -55,7 +55,7 @@ def create_rho_array(mu_array: np.ndarray, U: float, f_0: float):
 # ===============
 
 def kappa_landau(rho: float, mu: float, U: float, f_0: float):
-    return kappa_1d(mu - f_0 * rho, t, U) / (1 + f_0 * kappa_1d(mu - f_0 * rho,t ,U))
+    return kappa_1d(mu - f_0 * rho, U) / (1 + f_0 * kappa_1d(mu - f_0 * rho, U))
 
 def create_kappa_array(mu_array: np.ndarray, rho_array: np.ndarray, U: float, f_0: float):
     kappa_list = []
