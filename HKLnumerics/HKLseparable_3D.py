@@ -143,7 +143,7 @@ def solve_GLS_3d_for_rho_fixed_point(mu: float, U: float, f_0: float, f_1: float
             c = - a * (U**2 - U/2 + 3*t*d - 4*(t*d)**2)
             guess_e = a * mu**2 + b * mu + c
 
-    sol = fixed_point(GLS_reduced, [guess_rho, guess_e], xtol=1e-3)
+    sol = fixed_point(GLS_reduced, [guess_rho, guess_e], xtol=1e-3, method='iteration')
 
     return sol
 

@@ -221,7 +221,7 @@ def thesis_plot_multiple_lines(ax, label_array: list, x_arrays: list, y_arrays: 
     ax.yaxis.set_major_locator(MultipleLocator(yticks))  # y-axis ticks every 0.5 units
     
 
-def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: list, xlabel:str, ylabel:str,
+def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: list, xlabel:str, ylabels:list,
                                       titles=['',''], yticks=[2,2], ylimits=[0, 0], ymax=[None, None], legend=True,
                                        reverse=True, save_title=''):
 
@@ -229,8 +229,8 @@ def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: 
     fig, axes = plt.subplots(1, 2)
     fig.set_size_inches(textwidth, 4.5 * textwidth / 10)
 
-    thesis_plot_multiple_lines(axes[0], label_arrays[0], xarrays[0], yarrays[0], xlabel, ylabel, titles[0], yticks[0], ylimits[0], ymax[0], reverse)
-    thesis_plot_multiple_lines(axes[1], label_arrays[1], xarrays[1], yarrays[1], xlabel, ylabel, titles[1], yticks[1], ylimits[1], ymax[1], reverse)
+    thesis_plot_multiple_lines(axes[0], label_arrays[0], xarrays[0], yarrays[0], xlabel, ylabels[0], titles[0], yticks[0], ylimits[0], ymax[0], reverse)
+    thesis_plot_multiple_lines(axes[1], label_arrays[1], xarrays[1], yarrays[1], xlabel, ylabels[1], titles[1], yticks[1], ylimits[1], ymax[1], reverse)
 
     # Collect from both axes
     handles, labels = [], []

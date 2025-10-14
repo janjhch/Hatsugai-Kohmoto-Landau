@@ -106,9 +106,21 @@ def phase_diagram_landau(N: int, f_1: float):
         rho_list.append(rho_val)
         i += 1
 
-    print(f'\rProgress: {(i/N * 100):.1f}%{' ' * 20}', end="", flush=True)
+    Uc_list = Uc_list[1:-1]
+    rho_list = rho_list[1:-1]
+
+    for i in range(N-2):
+        rho_list.append(rho_list[i] + 1)
 
     Uc_arr = np.array(Uc_list)
+    U_c_reversed = Uc_arr[::-1]
+    Uc_arr = np.concatenate([Uc_arr, U_c_reversed])
+
     rho_arr = np.array(rho_list)
+
+    Uc_arr = np.ma.masked_invalid(Uc_arr)
+    rho_arr = np.ma.masked_invalid(rho_arr)
+
+    print(f'\rProgress: {(i/N * 100):.1f}%{' ' * 20}', end="", flush=True)
 
     return Uc_arr, rho_arr
