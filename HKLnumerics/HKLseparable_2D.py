@@ -18,7 +18,7 @@ def I_1(x: float, y: float):
 # J_1 with two varibales
 def J_1(x: float, y: float):
     if np.abs(x / (2 * t * y)) < 1:
-        return - np.sqrt((2 * t * y)**2 - x**2) / np.pi
+        return - np.sqrt((2 * t)**2 - (x / y)**2) / np.pi
     else:
         return 0
 

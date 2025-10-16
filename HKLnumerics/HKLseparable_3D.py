@@ -41,7 +41,7 @@ def J_1(x: np.ndarray, y: float):
 def J_1(x: np.ndarray, y: float):
     inside = np.abs(x) < (2 * t * y)
     result = np.zeros_like(x, dtype=float)
-    result[inside] = -1 / (np.pi * np.sqrt((2 * t * y)**2 - x[inside]**2))
+    result[inside] = -1 / (np.pi * np.sqrt((2 * t)**2 - (x[inside] / y)**2))
     return result
 
 
