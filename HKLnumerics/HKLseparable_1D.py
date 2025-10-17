@@ -291,6 +291,49 @@ def make_solution_arrays_rho_e_norm(mu_array: np.ndarray, U: float, f_0: float, 
 
 
 
+# ===============
+# COMPRESSIBILITY
+# ===============
+
+def DOS_1d(x: float, y: float):
+    if -2 * t * y < x < 2 * t * y:
+        return 1 / (np.pi * np.sqrt((2 * t * y) ** 2 - x ** 2))
+    else:
+        return 0
+    
+def kappa_sep_1d(mu: float, T_bar: float, f_1: float, U: float):
+    y = 1 + f_1 * T_bar
+
+    fraction = ((mu * DOS_1d(mu, y) + (mu - U) * DOS_1d(mu - U, y))**2) / (y**2 + f_1 * (mu**2 * DOS_1d(mu, y) + (mu - U)**2 * DOS_1d(mu - U, y)))
+
+    kappa = DOS_1d(mu, y) + DOS_1d(mu - U, y) - f_1 * fraction
+
+    return kappa
+
+def create_kappa_array(mu_array: np.ndarray, T_array: np.ndarray, U: float, f_1: float):
+    kappa_list = []
+
+    N = len(mu_array)
+    i = 0
+
+    for i in range(N):
+        print(f'\rProgress: {(i / N * 100):.1f}%{' ' * 20}', end="", flush=True)
+        i += 1
+        kappa_val = kappa_sep_1d(mu_array[i], T_array[i], f_1, U)
+        kappa_list.append(kappa_val)
+
+    kappa_array = np.array(kappa_list)
+
+    return kappa_array
+
+
+
+
+
+
+
+
+
 
 
 # ==============
