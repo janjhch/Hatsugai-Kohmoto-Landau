@@ -12,7 +12,7 @@
 # It seems that the best compromise between stability and efficiency is direct root finding wrt rho, so Ansatz 2.1.
 
 import numpy as np
-from scipy.optimize import root, minimize
+from scipy.optimize import root, minimize, root_scalar
 
 t = 1
 d = 1
@@ -197,13 +197,13 @@ def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float):
         elif 2 * t * d < mu <= U - 2 * t * d:
             guess_e = 0
         elif U - 2 * t * d < mu:
-            b = - a / 2
-            c = - a * (U**2 - U/2 + 3*t*d - 4*(t*d)**2)
+            b = - 2 * a * U 
+            c = - a * (- U**2 + 4 * (t*d)**2)
             guess_e = a * mu**2 + b * mu + c
 
     guess = [guess_rho, guess_e]
 
-    sol = root(GLS_reduced, guess, method='hybr')
+    sol = root(GLS_reduced, guess, method='lm')
     # Should return list [rho, e_tilde] for any given mu
     return sol.x
 
@@ -318,9 +318,9 @@ def create_kappa_array(mu_array: np.ndarray, T_array: np.ndarray, U: float, f_1:
 
     for i in range(N):
         print(f'\rProgress: {(i / N * 100):.1f}%{' ' * 20}', end="", flush=True)
-        i += 1
         kappa_val = kappa_sep_1d(mu_array[i], T_array[i], f_1, U)
         kappa_list.append(kappa_val)
+        i += 1
 
     kappa_array = np.array(kappa_list)
 
