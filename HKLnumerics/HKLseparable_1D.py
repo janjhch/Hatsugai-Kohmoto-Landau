@@ -12,7 +12,8 @@
 # It seems that the best compromise between stability and efficiency is direct root finding wrt rho, so Ansatz 2.1.
 
 import numpy as np
-from scipy.optimize import root, minimize, root_scalar
+from scipy.optimize import root, minimize
+import scipy.integrate as integrate
 
 t = 1
 d = 1
@@ -26,6 +27,9 @@ def create_mu_array(N: int, U: float, f_0: float):
 # DENSITY
 # =======
 
+def eps_k(k: float):
+    return -2 * t * np.cos(k)
+
 # I_1 with two variables
 def I_1(x: float, y: float):
     if np.abs(x / (2 * t * y)) < 1:
@@ -33,12 +37,26 @@ def I_1(x: float, y: float):
     else:
         return np.heaviside(x + 2 * t * y, 1)
     
+def I_1_integrate(x: float, y: float):
+    integrand = lambda k: np.heaviside(x - y * eps_k(k), 1)
+
+    intsol = integrate.quad(integrand, -np.pi, np.pi)
+
+    return intsol[0] / (2 * np.pi)
+
 # J_1 with two varibales
 def J_1(x: float, y: float):
     if np.abs(x / (2 * t * y)) < 1:
         return - np.sqrt((2 * t)**2 - (x / y)**2) / np.pi
     else:
         return 0
+    
+def J_1_integrate(x: float, y: float):
+    integrand = lambda k: eps_k(k) * np.heaviside(x - y * eps_k(k), 1)
+
+    intsol = integrate.quad(integrand, -np.pi, np.pi)
+
+    return intsol[0] / (2 * np.pi)
 
 
 # The non-linear system of equations that needs to be solved
@@ -46,6 +64,11 @@ def J_1(x: float, y: float):
 def GLS_1d(rho: float, mu: float, U: float, e_tilde: float, f_0: float, f_1: float):
     eq1 = rho - (I_1(mu - f_0 * rho, 1 + f_1 * e_tilde) + I_1(mu - U - f_0 * rho, 1 + f_1 * e_tilde))
     eq2 = e_tilde - (J_1(mu - f_0 * rho, 1 + f_1 * e_tilde) + J_1(mu - U - f_0 * rho, 1 + f_1 * e_tilde))
+    return [eq1, eq2]
+
+def GLS_1d_integrate(rho: float, mu: float, U: float, e_tilde: float, f_0: float, f_1: float):
+    eq1 = rho - (I_1_integrate(mu - f_0 * rho, 1 + f_1 * e_tilde) + I_1_integrate(mu - U - f_0 * rho, 1 + f_1 * e_tilde))
+    eq2 = e_tilde - (J_1_integrate(mu - f_0 * rho, 1 + f_1 * e_tilde) + J_1_integrate(mu - U - f_0 * rho, 1 + f_1 * e_tilde))
     return [eq1, eq2]
 
 
@@ -166,9 +189,12 @@ def create_solution_arrays_mu_e_norm(rho_array: np.ndarray, U: float, f_0: float
 #---- Ansatz 2.1 --------
 
 # Do not solve SOE for mu, but for rho
-def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float):
+def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float, integral=False):
     # def x = [rho, e_tilde]
-    GLS_reduced = lambda x: GLS_1d(x[0], mu, U, x[1], f_0, f_1)
+    if integral == False:
+        GLS_reduced = lambda x: GLS_1d(x[0], mu, U, x[1], f_0, f_1)
+    else:
+        GLS_reduced = lambda x: GLS_1d_integrate(x[0], mu, U, x[1], f_0, f_1)
 
     # Guess something near a possible solution
     if U <= 4 * t * d:
@@ -210,12 +236,12 @@ def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float):
 
 # Given an array of mu values, calculate correponding rho and e_tilde values, which are returned as separate arrays
 # Uses direct 2d root finding
-def create_solution_arrays_rho_e_root(mu_array: np.ndarray, U: float, f_0: float, f_1: float):
+def create_solution_arrays_rho_e_root(mu_array: np.ndarray, U: float, f_0: float, f_1: float, integral=False):
     rho_list = []
     e_tilde_list = []
 
     for mu_val in mu_array:
-        sol = solve_GLS_1d_for_rho(mu_val, U, f_0, f_1)
+        sol = solve_GLS_1d_for_rho(mu_val, U, f_0, f_1, integral=integral)
         rho_list.append(sol[0])
         e_tilde_list.append(sol[1])
 
