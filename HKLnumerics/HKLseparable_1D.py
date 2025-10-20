@@ -33,7 +33,7 @@ def eps_k(k: float):
 # I_1 with two variables
 def I_1(x: float, y: float):
     if np.abs(x / (2 * t * y)) < 1:
-        return np.heaviside(x + 2 * t * y, 1) - np.arccos(x / (2 * t * y)) / np.pi
+        return np.heaviside(x + 2 * t * y, 1) - np.sign(y) * np.arccos(x / (2 * t * y)) / np.pi
     else:
         return np.heaviside(x + 2 * t * y, 1)
     
@@ -47,7 +47,7 @@ def I_1_integrate(x: float, y: float):
 # J_1 with two varibales
 def J_1(x: float, y: float):
     if np.abs(x / (2 * t * y)) < 1:
-        return - np.sqrt((2 * t)**2 - (x / y)**2) / np.pi
+        return - np.sign(y) *  np.sqrt((2 * t)**2 - (x / y)**2) / np.pi
     else:
         return 0
     

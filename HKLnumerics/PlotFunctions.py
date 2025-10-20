@@ -67,11 +67,15 @@ def two_graphs_in_one_plot(x_array_1: np.ndarray, x_array_2: np.ndarray, y_array
     plt.show()
 
 # Plots any number of graphs in one plot, arrays must be given inside one list for x and y respectively
-def many_plots(label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str, title='', ymax=None, ymin=None):
+def many_plots(label_array: list, x_arrays: list, y_arrays: list, xlabel: str, ylabel: str, title='', ymax=None, ymin=None, points=False):
     plt.figure(dpi=150)
     # Plot erstellen
-    for i in range(len(x_arrays)):
-        plt.plot(x_arrays[i], y_arrays[i], linestyle='-', label=label_array[i])
+    if points == False:
+        for i in range(len(x_arrays)):
+            plt.plot(x_arrays[i], y_arrays[i], linestyle='-', label=label_array[i])
+    else:
+        for i in range(len(x_arrays)):
+            plt.plot(x_arrays[i], y_arrays[i], 'o', label=label_array[i], ms=0.5)
     
     # Achsenbeschriftungen und Titel
     plt.xlabel(xlabel)
