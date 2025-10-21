@@ -385,7 +385,7 @@ def thesis_singleplot_multiple_lines(label_array: list, x_arrays: list, y_arrays
     # Create the plot
     fig, ax = plt.subplots()
 
-    fig.set_size_inches(6.377953 / 1.5, 2.73341 * 1.2)
+    fig.set_size_inches(6.377953 / 1.7, 2.73341 * 1.0)
 
     # Plot erstellen
     for i in reversed(range(len(x_arrays))):
@@ -404,15 +404,17 @@ def thesis_singleplot_multiple_lines(label_array: list, x_arrays: list, y_arrays
 
     #ax.legend(loc='best')
     if title != '':
-        ax.set_title(title, weight='bold')
+        ax.set_title(title, weight='bold',
+                     loc="center",
+                     )
 
     for spine in ["top", "right", "left", "bottom"]:
         ax.spines[spine].set_visible(True)
 
     ax.yaxis.set_major_locator(MultipleLocator(yticks))  # y-axis ticks every 0.5 units
     
-    ax.legend(loc="upper left",
-            bbox_to_anchor=(1, 1),  # move legend below plots
+    ax.legend(loc="center left",
+            bbox_to_anchor=(1, 0.5),  # move legend below plots
             ncol=1,
             frameon=False)
 

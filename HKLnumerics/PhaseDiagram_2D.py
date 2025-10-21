@@ -3,8 +3,8 @@ from scipy.optimize import root_scalar
 from .HK_2D import rho_2d
 from .HKLseparable_2D import solve_GLS_2d_for_rho
 
-t = 1
-d = 2
+t: float = 1
+d: float = 2
 
 def create_rho_array(N):
     return np.linspace(0, 2, N)
@@ -97,11 +97,32 @@ def phase_diagram_landau(N: int, f_1: float):
     i: int = 0
 
     for mu_val in mu_arr:
-        print(f'\rProgress: {(i/N * 100):.1f}%{' ' * 20}', end="", flush=True)
-        func_u = lambda U: mu_val + 2 * t * d * (1 + f_1 * solve_GLS_2d_for_rho(mu_val, U, 0, f_1)[1]) - U
-        Uc_val = root_scalar(func_u, method='brentq', bracket=(0, 4 * t * d))
-        rho_val = solve_GLS_2d_for_rho(mu_val, Uc_val.root, 0, f_1)[0]
+        print(f'\rProgress: {(i/N * 100):.1f}%{" " * 20}', end="", flush=True)
 
+        # define scalar-valued function: always returns float
+        def func_u(U):
+            # Unpack the inner solver result which now returns scalars
+            rho_tmp, e_tmp = solve_GLS_2d_for_rho(mu_val, U, 0, f_1)
+            return float(mu_val + 2 * t * d * (1 + f_1 * e_tmp) - U)
+
+        x_0 = float(mu_val + 2 * t * d)
+
+        # Try newton, but catch failures and fallback to brentq/other
+        try:
+            Uc_val = root_scalar(func_u, x0=x_0, method='newton')
+            if not getattr(Uc_val, "converged", True) and not hasattr(Uc_val, "root"):
+                # if newton didn't converge for some SciPy versions
+                raise RuntimeError("newton failed to converge")
+        except Exception as exc:
+            # optional: try a bracketed method if newton fails
+            # print('Newton failed; solve using brentq method.\n')
+            try:
+                brac = (0, mu_val + 3 * t * d)
+                Uc_val = root_scalar(func_u, bracket=brac, method='brentq')
+            except Exception as exc2:
+                raise RuntimeError(f"root finding failed at mu={mu_val}: newton error: {exc}; brentq error: {exc2}")
+
+        rho_val, _ = solve_GLS_2d_for_rho(mu_val, Uc_val.root, 0, f_1)
         Uc_list.append(Uc_val.root)
         rho_list.append(rho_val)
         i += 1

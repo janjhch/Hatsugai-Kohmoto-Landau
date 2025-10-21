@@ -80,8 +80,17 @@ def solve_GLS_2d_for_rho(mu: float, U: float, f_0: float, f_1: float):
     guess = [guess_rho, 0]
 
     sol = root(GLS_reduced, guess, method='hybr')
-    # Should return list [rho, e_tilde] for any given mu
-    return sol.x
+    """
+    # Robust handling:
+    if not sol.success:
+        # give useful debug info and raise to stop propagation of bad shapes
+        raise RuntimeError(f"solve_GLS_2d_for_rho: inner solver failed for mu={mu}, U={U}: {sol.message}")
+    """
+    # Ensure we always return plain Python floats (no shape surprises)
+    x = np.asarray(sol.x).ravel()      # now guaranteed shape (2,)
+    rho_val = float(x[0])
+    e_tilde = float(x[1])
+    return rho_val, e_tilde
 
 
 # Given an array of mu values, calculate correponding rho and e_tilde values, which are returned as separate arrays
