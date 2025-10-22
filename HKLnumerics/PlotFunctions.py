@@ -273,6 +273,8 @@ def thesis_doubleplot_multiple_lines(label_arrays:list, xarrays: list, yarrays: 
 
     plt.tight_layout(rect=[0,0,1,1])
 
+    #fig.subplots_adjust(wspace=0.25, bottom=0.2, top=0.9)
+
     if save_title != '':
         plt.savefig(save_title, dpi=1000, bbox_inches="tight")
         

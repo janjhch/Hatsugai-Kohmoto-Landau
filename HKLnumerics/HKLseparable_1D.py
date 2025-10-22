@@ -229,7 +229,7 @@ def solve_GLS_1d_for_rho(mu: float, U: float, f_0: float, f_1: float, integral=F
 
     guess = [guess_rho, guess_e]
 
-    sol = root(GLS_reduced, guess, method='hybr')
+    sol = root(GLS_reduced, guess, method='lm')
     # Should return list [rho, e_tilde] for any given mu
     return sol.x
 

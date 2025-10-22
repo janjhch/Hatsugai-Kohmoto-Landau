@@ -49,35 +49,36 @@ def solve_GLS_2d_for_rho(mu: float, U: float, f_0: float, f_1: float):
     # Guess something near a possible solution
     if U <= 4 * t * d:
         # Model as one straight line through start and endpoint
-        guess_rho = (2 / (4 * t + U)) * mu + 4 * t / (4 * t + U)
+        guess_rho = (2 / (4 * t * d + U)) * mu + 4 * t / (4 * t * d + U)
     else:
         # Model as two different lines for each band
         if mu <= 2 * t * d:
-            guess_rho = mu / (4 * t) + 1 / (2 * t)
+            guess_rho = mu / (4 * t * d) + 1 / 2
         elif 2 * t * d < mu <= U - 2 * t * d:
             guess_rho = 1
         elif U - 2 * t * d < mu:
-            guess_rho = mu / (4 * t) + (3 - U / (2 * t)) / 2
+            guess_rho = mu / (4 * t * d) + 1 - (U - 2 * t * d) / (4 * t * d)
 
     if U <= 4 * t * d:
-        a = 1
+        a = 0.1
         b = - a * (4 * t + U**2) / (4 * t + U)
         c = 2 * t * b - 4 * t**2 * a
         # Model as ax**2 + bx + c
         guess_e = a * mu**2 + b * mu + c
     else:
-        a = 0.5
+        a = 1 / 36
         # Model as two different parabolas for each band
-        if mu <= 2 * t:
-            guess_e = a * (mu**2 - 4 * t**2 * a)
-        elif 2 * t < mu <= U - 2 * t:
+        if mu <= 2 * t * d:
+            guess_e = a * (mu**2 - 4 * (t * d)**2)
+        elif 2 * t * d < mu <= U - 2 * t * d:
             guess_e = 0
-        elif U - 2 * t < mu:
-            b = - a *  (4 * t * U) / (U + 2 * t)
-            c = - (U**2 + 2 * t**2) * a - U * b
+        elif U - 2 * t * d < mu:
+            b = - 2 * a * U 
+            c = - a * (- U**2 + 4 * (t*d)**2)
             guess_e = a * mu**2 + b * mu + c
 
-    guess = [guess_rho, 0]
+
+    guess = [guess_rho, guess_e]
 
     sol = root(GLS_reduced, guess, method='hybr')
     """
