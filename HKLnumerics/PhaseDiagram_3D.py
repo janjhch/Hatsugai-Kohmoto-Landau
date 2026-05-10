@@ -110,6 +110,7 @@ def phase_diagram_hk(N: int):
 
     rho_list =[]
     for i in range(N):
+        print(f'\rProgress: {(i/N * 100):.1f}%{' ' * 20}', end="", flush=True)
         rho_val = rho_3d(mu_array[i], U_c_array[i])
         rho_list.append(rho_val)
 
